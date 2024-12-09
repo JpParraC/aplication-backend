@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Agregar un log para asegurarte de que se montan las rutas correctamente
+
 console.log("Montando las rutas de usuarios...");
 app.use('/api', router);
 
