@@ -3,7 +3,8 @@ import { PORT } from './src/routes/config.js';
 import userRouter from './src/routes/users.routes.js'; 
 import reservationRouter from './src/routes/reservation.router.js'; 
 import roomTypeRoutes from './src/routes/roomtype.routes.js'; 
-import roomRoutes from './src/routes/room.routes.js'; // Rutas de habitaciones
+import roomRoutes from './src/routes/room.routes.js';
+import availabilityRoutes from './src/routes/availability.routes.js'; // Rutas de habitaciones
 import morgan from 'morgan';
 import cors from 'cors';
 
@@ -29,6 +30,11 @@ console.log("Montando las rutas de tipos de habitaciones en '/api/roomtypes'");
 // Montando las rutas de habitaciones
 app.use('/api/rooms', roomRoutes);
 console.log("Montando las rutas de habitaciones en '/api/rooms'");
+
+
+app.use('/api/availability', availabilityRoutes);
+console.log("Montando las rutas de habitaciones en '/api/availability'");
+
 
 app.get('/', (req, res) => {
   res.send('¡Servidor funcionando!');
