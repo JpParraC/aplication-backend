@@ -3,7 +3,7 @@ import { pool } from '../routes/db.js';
 export const checkRoomAvailability = async (req, res) => {
   try {
     const { roomId, checkin, checkout } = req.query;
-
+    console.log(req.query); 
     // Verificar que los parámetros necesarios estén presentes
     if (!roomId || !checkin || !checkout) {
       return res.status(400).json({ message: 'Room ID, check-in, and check-out dates are required' });
