@@ -4,9 +4,15 @@ import userRouter from './src/routes/users.routes.js';
 import reservationRouter from './src/routes/reservation.router.js'; 
 import roomTypeRoutes from './src/routes/roomtype.routes.js'; 
 import roomRoutes from './src/routes/room.routes.js';
-import availabilityRoutes from './src/routes/availability.routes.js'; // Rutas de habitaciones
+import availabilityRoutes from './src/routes/availability.routes.js'; 
+import authRoutes from './src/routes/authroutes.js';
+import { authenticateAndAuthorize } from './src/middleware/authmiddleware.js'; 
+import rolesRouter from './src/routes/roles.routes.js';  // Middleware para proteger las rutas
 import morgan from 'morgan';
 import cors from 'cors';
+import dotenv from 'dotenv'; // Importar dotenv para cargar variables de entorno
+
+dotenv.config();
 
 const app = express();
 
@@ -15,26 +21,32 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Montando las rutas de usuarios
+// Montando las rutas de usuarios (no requiere autenticación, pero podría si fuera necesario)
 app.use('/api/', userRouter);
 console.log("Montando las rutas de usuarios en '/api/'");
 
-// Montando las rutas de reservas
-app.use('/api/reservations', reservationRouter);
+// Montando las rutas de reservas, protegida con permiso 'manage_reservations'
+app.use('/api/reservations', authenticateAndAuthorize('manage_reservations'), reservationRouter);
 console.log("Montando las rutas de reservas en '/api/reservations'");
 
-// Montando las rutas de tipos de habitaciones
-app.use('/api/roomtypes', roomTypeRoutes);
+// Montando las rutas de tipos de habitaciones, protegida con permiso 'view_roomtypes'
+app.use('/api/roomtypes', authenticateAndAuthorize('view_roomtypes'), roomTypeRoutes);
 console.log("Montando las rutas de tipos de habitaciones en '/api/roomtypes'");
 
-// Montando las rutas de habitaciones
-app.use('/api/rooms', roomRoutes);
+// Montando las rutas de habitaciones, protegida con permiso 'view_rooms'
+app.use('/api/rooms', authenticateAndAuthorize('view_rooms'), roomRoutes);
 console.log("Montando las rutas de habitaciones en '/api/rooms'");
 
+// Montando las rutas de disponibilidad, protegida con permiso 'view_availability'
+app.use('/api/availability', authenticateAndAuthorize('view_availability'), availabilityRoutes);
+console.log("Montando las rutas de disponibilidad en '/api/availability'");
 
-app.use('/api/availability', availabilityRoutes);
-console.log("Montando las rutas de habitaciones en '/api/availability'");
-
+// Montando las rutas de autenticación (login), no requiere autorización, solo autenticación
+app.use('/api/auth', authRoutes);
+console.log("Montando las rutas de autenticación en '/api/auth'");
+// Montando las rutas de roles
+app.use('/api/roles', rolesRouter); // Aquí agregamos las rutas de roles
+console.log("Montando las rutas de roles en '/api/roles'");
 
 app.get('/', (req, res) => {
   res.send('¡Servidor funcionando!');
