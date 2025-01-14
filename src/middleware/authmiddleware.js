@@ -1,5 +1,6 @@
-// middlewares/authMiddleware.js
+// src/middlewares/authMiddleware.js
 import jwt from 'jsonwebtoken';
+import { rolePermissions } from '../config/permissions.js'; // Asegúrate de ajustar la ruta
 
 // Middleware para verificar el token y los permisos
 export const authenticateAndAuthorize = (requiredPermission) => {
@@ -21,8 +22,10 @@ export const authenticateAndAuthorize = (requiredPermission) => {
       // Asignamos la información del usuario al objeto `req`
       req.user = user;
 
-      // Verificar si el usuario tiene el permiso requerido
-      if (!user.permissions || !user.permissions.includes(requiredPermission)) {
+      // Verificar si el usuario tiene el rol necesario y el permiso requerido
+      const userPermissions = rolePermissions[user.role_id] || []; // Obtenemos los permisos del rol
+
+      if (!userPermissions.includes(requiredPermission)) {
         return res.status(403).json({ message: 'No tiene permisos para acceder a esta ruta' });
       }
 

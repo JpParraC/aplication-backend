@@ -2,8 +2,8 @@
 import bcrypt from 'bcrypt'; 
 import jwt from 'jsonwebtoken'; 
 import { pool } from '../routes/db.js';
-import { getUserByStaffId } from '../models/users.js'; // ajusta la ruta si es necesario
- // Si estás utilizando un pool de conexiones a la base de datos
+import { getUserByStaffId } from '../models/users.js';
+import { rolePermissions } from '../config/permissions.js'; // Asegúrate de ajustar la ruta
 
 // Función para actualizar todas las contraseñas de los usuarios
 export const updateAllUserPasswords = async () => {
@@ -24,8 +24,12 @@ export const updateAllUserPasswords = async () => {
 };
 
 // Controlador para manejar el login
+// Controlador para manejar el login
 export const login = async (req, res) => {
   const { staff_id, password } = req.body;
+
+  // Log para ver los datos de entrada
+  console.log('Datos recibidos:', { staff_id, password });
 
   // Asegúrate de que staff_id sea un número
   if (isNaN(staff_id)) {
@@ -45,19 +49,37 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: 'Contraseña incorrecta' });
     }
 
+    // Verificar los permisos para el rol del usuario
+    const permissions = rolePermissions[user.role_id] || [];
+    console.log('Permisos del usuario:', permissions); // Verifica los permisos
+
     // Generar un token JWT
     const token = jwt.sign(
-      { id: user.id, staff_id: user.staff_id, role_id: user.role_id },
+      { 
+        id: user.id, 
+        staff_id: user.staff_id, 
+        role_id: user.role_id, 
+        permissions: permissions // Agregar permisos al token
+      },
       process.env.JWT_SECRET, // Clave secreta definida en tu archivo de configuración
       { expiresIn: '1h' } // Expiración del token
     );
 
+    // Log para verificar el contenido del token
+    console.log('Token generado con permisos:', { 
+      id: user.id, 
+      staff_id: user.staff_id, 
+      role_id: user.role_id, 
+      permissions: permissions 
+    });
+
     // Responder con el token
-    res.status(200).json({ token, message: 'Inicio de sesión exitoso' });
+    res.status(200).json({ token, permissions, message: 'Inicio de sesión exitoso' });
   } catch (error) {
     console.error('Error al procesar el login:', error);
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
+
 
 // Exporta otras funciones si es necesario
