@@ -5,9 +5,11 @@ import reservationRouter from './src/routes/reservation.router.js';
 import roomTypeRoutes from './src/routes/roomtype.routes.js'; 
 import roomRoutes from './src/routes/room.routes.js';
 import availabilityRoutes from './src/routes/availability.routes.js'; 
+import staffRouter from './src/routes/staff.routes.js';
 import authRoutes from './src/routes/authroutes.js';
 import { authenticateAndAuthorize } from './src/middleware/authmiddleware.js'; 
-import rolesRouter from './src/routes/roles.routes.js';  // Middleware para proteger las rutas
+import rolesRouter from './src/routes/roles.routes.js';  
+import adminRoutes from './src/routes/adminroutes.js';
 import morgan from 'morgan';
 import cors from 'cors';
 import dotenv from 'dotenv'; // Importar dotenv para cargar variables de entorno
@@ -47,6 +49,13 @@ console.log("Montando las rutas de autenticación en '/api/auth'");
 // Montando las rutas de roles
 app.use('/api/roles', rolesRouter); // Aquí agregamos las rutas de roles
 console.log("Montando las rutas de roles en '/api/roles'");
+
+app.use('/api/staff', staffRouter); 
+console.log("Montando las rutas de empleados en '/api/staff'");
+
+app.use('/api/admins', adminRoutes); 
+console.log("Montando las rutas de administradores en '/api/admins'");
+
 
 app.get('/', (req, res) => {
   res.send('¡Servidor funcionando!');

@@ -16,12 +16,12 @@ router.get('/', getAdmins);
 router.post('/', addAdmin);
 
 // Obtener un administrador por `staff_id`
-router.get('/:staffId', getAdminByStaffId);
+router.get('/admins/:staffId', getAdminByStaffId);
 
 // Actualizar un administrador
-router.put('/:id', editAdmin);
+router.put('/admins/:id', editAdmin);
 
 // Eliminar un administrador
-router.delete('/:id', removeAdmin);
+router.delete('/admins/:id', removeAdmin);
 
 export default router;
