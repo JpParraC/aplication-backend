@@ -5,8 +5,8 @@ import { getUserById } from '../controllers/user.controllers.js';
 import { createUser } from '../controllers/user.controllers.js';
 import { updateUser } from '../controllers/user.controllers.js';
 import { deleteUser } from '../controllers/user.controllers.js';
-
-
+import { getUserByidguest} from '../controllers/user.controllers.js';
+import { getUserByname} from '../controllers/user.controllers.js';
 
 
 
@@ -24,5 +24,10 @@ router.put('/users/:id', updateUser );
 
 //eliminar
 router.delete('/users/:id', deleteUser);
+
+router.get('/users/idguest/:id_guest', getUserByidguest);
+router.get('/users/name/:first_name', getUserByname);
+
+
 
 export default router;

@@ -23,31 +23,31 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Montando las rutas de usuarios (no requiere autenticación, pero podría si fuera necesario)
+
 app.use('/api/', userRouter);
 console.log("Montando las rutas de usuarios en '/api/'");
 
-// Montando las rutas de reservas, protegida con permiso 'manage_reservations'
+
 app.use('/api/reservations', reservationRouter);
 console.log("Montando las rutas de reservas en '/api/reservations'");
 
-// Montando las rutas de tipos de habitaciones, protegida con permiso 'view_roomtypes'
+
 app.use('/api/roomtypes', roomTypeRoutes);
 console.log("Montando las rutas de tipos de habitaciones en '/api/roomtypes'");
 
-// Montando las rutas de habitaciones, protegida con permiso 'view_rooms'
+
 app.use('/api/rooms',  roomRoutes);
 console.log("Montando las rutas de habitaciones en '/api/rooms'");
 
-// Montando las rutas de disponibilidad, protegida con permiso 'view_availability'
+
 app.use('/api/availability', availabilityRoutes);
 console.log("Montando las rutas de disponibilidad en '/api/availability'");
 
-// Montando las rutas de autenticación (login), no requiere autorización, solo autenticación
+// Montando las rutas de autenticación (login)
 app.use('/api/auth', authRoutes);
 console.log("Montando las rutas de autenticación en '/api/auth'");
 // Montando las rutas de roles
-app.use('/api/roles', rolesRouter); // Aquí agregamos las rutas de roles
+app.use('/api/roles', rolesRouter); 
 console.log("Montando las rutas de roles en '/api/roles'");
 
 app.use('/api/staff', staffRouter); 

@@ -154,5 +154,50 @@ export const getUsers =  async (req, res) => {
     }
   };
   
+  export const getUserByidguest = async (req, res) => {
+    const { id_guest } = req.params; // Obtén el parámetro id_guest desde los path params
+  
+    // Verifica que el parámetro fue proporcionado
+    if (!id_guest) {
+      return res.status(400).json({ message: "id_guest is required" });
+    }
+  
+    try {
+      // Asegúrate de pasar el parámetro como cadena
+      const result = await pool.query('SELECT * FROM guests WHERE id_guest = $1', [String(id_guest)]);
+  
+      if (result.rows.length > 0) {
+        res.json(result.rows[0]); // Retorna el usuario encontrado
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+    } catch (err) {
+      console.error('Error in query:', err.stack);
+      res.status(500).send('Database error');
+    }
+  };
 
+
+  export const getUserByname = async (req, res) => {
+    const { first_name } = req.params; // Obtén el parámetro first_name desde los path params
+  
+    // Verifica que el parámetro fue proporcionado y no está vacío
+    if (!first_name || first_name.trim() === '') {
+      return res.status(400).json({ message: "first_name is required" });
+    }
+  
+    try {
+      // Búsqueda insensible a mayúsculas/minúsculas
+      const result = await pool.query('SELECT * FROM guests WHERE first_name ILIKE $1', [`%${first_name}%`]);
+  
+      if (result.rows.length > 0) {
+        res.json(result.rows); // Retorna todos los usuarios encontrados
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+    } catch (err) {
+      console.error('Error in query:', err.stack);
+      res.status(500).send('Database error');
+    }
+  };
   

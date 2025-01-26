@@ -1,27 +1,27 @@
 import express from 'express';
 import {
-  getAdmins,
-  addAdmin,
-  getAdminByStaffId,
-  editAdmin,
-  removeAdmin
-} from '../controllers/admin.controller.js';
+  getReservations,
+  getReservationById,
+  createReservation,
+  updateReservation,
+  deleteReservation
+} from '../controllers/reservation.controllers.js';
 
 const router = express.Router();
 
-// Obtener todos los administradores
-router.get('/', getAdmins);
+// Obtener todas las reservas
+router.get('/', getReservations);
 
-// Crear un nuevo administrador
-router.post('/', addAdmin);
+// Obtener una reserva por ID
+router.get('/:id', getReservationById);
 
-// Obtener un administrador por `staff_id`
-router.get('/:staffId', getAdminByStaffId);
+// Crear una nueva reserva
+router.post('/', createReservation);
 
-// Actualizar un administrador
-router.put('/:id', editAdmin);
+// Actualizar una reserva existente
+router.put('/:id', updateReservation);
 
-// Eliminar un administrador
-router.delete('/:id', removeAdmin);
+// Eliminar una reserva
+router.delete('/:id', deleteReservation);
 
 export default router;
