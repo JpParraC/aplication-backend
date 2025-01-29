@@ -7,6 +7,8 @@ import roomRoutes from './src/routes/room.routes.js';
 import availabilityRoutes from './src/routes/availability.routes.js'; 
 import staffRouter from './src/routes/staff.routes.js';
 import authRoutes from './src/routes/authroutes.js';
+import invoiceRoutes from './src/routes/invoice.router.js';
+import paymentRoutes from './src/routes/payment.router.js';
 import { authenticateAndAuthorize } from './src/middleware/authmiddleware.js'; 
 import rolesRouter from './src/routes/roles.routes.js';  
 import adminRoutes from './src/routes/adminroutes.js';
@@ -55,6 +57,13 @@ console.log("Montando las rutas de empleados en '/api/staff'");
 
 app.use('/api/admins', adminRoutes); 
 console.log("Montando las rutas de administradores en '/api/admins'");
+
+app.use('/api/invoices', invoiceRoutes);
+console.log("Montando las rutas de facturas en '/api/invoices'");
+
+app.use('/api/payments', paymentRoutes);
+console.log("Montando las rutas de pagos en '/api/payments'");
+
 
 
 app.get('/', (req, res) => {
