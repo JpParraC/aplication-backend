@@ -12,6 +12,8 @@ export const getAdmins = async (req, res) => {
   }
 };
 
+
+
 // Crear un nuevo administrador
 export const addAdmin = async (req, res) => {
   const { password, role_id, staff_id } = req.body;
