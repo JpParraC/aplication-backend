@@ -31,15 +31,15 @@ model guests {
 }
 
 model invoice {
-  id             Int              @id @default(autoincrement())
-  date_invoice   DateTime?        @db.Date
+  id             Int          @id @default(autoincrement())
+  date_invoice   DateTime?    @db.Date
   total_amount   Float?
-  status         String?          @db.VarChar(1)
+  status         String?      @db.VarChar(1)
   reservation_id Int?
-  created_at     DateTime?        @default(now()) @db.Timestamptz(6)
-  updated_at     DateTime?        @default(now()) @db.Timestamptz(6)
-  reservation    reservation?     @relation(fields: [reservation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  payment_detail payment_detail[]
+  created_at     DateTime?    @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime?    @default(now()) @db.Timestamptz(6)
+  mount_pending  Float?
+  reservation    reservation? @relation(fields: [reservation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model password_reset {
@@ -57,13 +57,11 @@ model password_reset {
 model payment_detail {
   id                Int             @id @default(autoincrement())
   notes             String?
-  date_pay          DateTime?       @db.Date
-  time              DateTime?       @db.Timestamptz(6)
+  date_pay          DateTime?       @default(now()) @db.Timestamp(6)
   id_payment_method Int?
   invoice_id        Int?
   mount             Float?
   payment_method    payment_method? @relation(fields: [id_payment_method], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  invoice           invoice?        @relation(fields: [invoice_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model payment_method {
@@ -136,7 +134,6 @@ model room_task {
   room_id                 Int?
   completed_tasks_history completed_tasks_history[]
   rooms                   rooms?                    @relation(fields: [room_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  staff                   staff?                    @relation(fields: [staff_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "staff_id")
 }
 
 model room_type {
@@ -161,39 +158,37 @@ model rooms {
 }
 
 model staff {
-  id             Int         @id @default(autoincrement())
-  id_staff       String?     @unique @db.VarChar(12)
-  name_staff     String?     @db.VarChar(45)
-  lastname_staff String?     @db.VarChar(45)
-  email_staff    String?     @db.VarChar(45)
-  phone          String?     @db.VarChar(20)
+  id             Int        @id @default(autoincrement())
+  id_staff       String?    @unique @db.VarChar(12)
+  name_staff     String?    @db.VarChar(45)
+  lastname_staff String?    @db.VarChar(45)
+  email_staff    String?    @db.VarChar(45)
+  phone          String?    @db.VarChar(20)
   rol_id         Int?
-  created_at     DateTime?   @default(now()) @db.Timestamptz(6)
-  updated_at     DateTime?   @default(now()) @db.Timestamptz(6)
-  gen            String?     @db.VarChar(1)
-  room_task      room_task[]
-  rol_staff      rol_staff?  @relation(fields: [rol_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  created_at     DateTime?  @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime?  @default(now()) @db.Timestamptz(6)
+  gen            String?    @db.VarChar(1)
+  rol_staff      rol_staff? @relation(fields: [rol_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   users          users[]
 }
 
 model staff_schedule {
-  id          Int       @id @default(autoincrement())
-  staff_id    Int?
-  days_week   String?
-  start_time  DateTime? @db.Time(6)
-  end_time    DateTime? @db.Time(6)
-  shift_type  String?   @db.VarChar(20)
-  notes       String?
+  id         Int       @id @default(autoincrement())
+  staff_id   Int?
+  days_week  String?
+  start_time DateTime? @db.Time(6)
+  end_time   DateTime? @db.Time(6)
+  shift_type String?   @db.VarChar(20)
+  notes      String?
 }
-
 
 model users {
   id         Int       @id @default(autoincrement())
   password   String?   @db.VarChar(100)
   role_id    Int?
-  staff_id   Int?
+  staff_id   String?   @db.VarChar(12)
   created_at DateTime? @default(now()) @db.Timestamptz(6)
   updated_at DateTime? @default(now()) @db.Timestamptz(6)
   roles      roles?    @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  staff      staff?    @relation(fields: [staff_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  staff      staff?    @relation(fields: [staff_id], references: [id_staff], onDelete: Cascade)
 }
