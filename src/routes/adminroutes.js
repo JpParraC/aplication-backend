@@ -4,25 +4,20 @@ import {
   addAdmin,
   getAdminByStaffId,
   editAdmin,
-  removeAdmin
+  removeAdmin,
+  getAllUsersWithDetails, updateAdmin
 } from '../controllers/admin.controller.js';
 
 const router = express.Router();
 
-// Obtener todos los administradores
-router.get('/', getAdmins);
 
-// Crear un nuevo administrador
-router.post('/', addAdmin);
+router.get('/all-users', getAllUsersWithDetails); // Obtener todos los usuarios con detalles
 
-
-// Obtener un administrador por `staff_id`
-router.get('/:staffId', getAdminByStaffId);
-
-// Actualizar un administrador
-router.put('/:id', editAdmin);
-
-// Eliminar un administrador
-router.delete('/:id', removeAdmin);
+// Rutas generales después
+router.get('/', getAdmins); // Obtener todos los administradores
+router.post('/', addAdmin); // Crear un nuevo administrador
+router.get('/:staffId', getAdminByStaffId); // Obtener un administrador por `staff_id`
+router.put('/:id_staff', updateAdmin); // Actualizar un administrador por `id`
+router.delete('/:staff_id', removeAdmin); // Eliminar un administrador
 
 export default router;

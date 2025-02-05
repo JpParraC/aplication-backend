@@ -65,12 +65,9 @@ export const createStaff = async (req, res) => {
 // Actualizar un empleado
 export const updateStaff = async (req, res) => {
   const { id } = req.params;
-  const { id_staff, name_staff, lastname_staff, email_staff, phone, rol_id } = req.body;
+  const { id_staff, name_staff, lastname_staff, email_staff, phone, rol_id , gen} = req.body;
 
-  if (!id_staff || !name_staff || !lastname_staff || !email_staff || !phone || !rol_id) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
+  
   try {
     const result = await prisma.$queryRaw`
       UPDATE staff SET 
@@ -79,7 +76,8 @@ export const updateStaff = async (req, res) => {
         lastname_staff = ${lastname_staff}, 
         email_staff = ${email_staff}, 
         phone = ${phone}, 
-        rol_id = ${rol_id}
+        rol_id = ${rol_id},
+        gen = ${gen}
       WHERE id_staff = ${id}
       RETURNING *
     `;

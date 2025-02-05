@@ -9,7 +9,7 @@ import { rolePermissions } from '../config/permissions.js';
 const resend = new Resend("re_MGSJ1Pt7_Cg5UEyJCSEGsxZQ4BGUfpe8a");
 
 const generateAccessToken = (user) => {
-  return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '7h' });
+  return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '2h' });
 };
 
 // Función de login
