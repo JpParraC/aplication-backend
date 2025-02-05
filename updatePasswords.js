@@ -1,5 +1,6 @@
 import { pool } from './src/routes/db.js'; // Asegúrate de que la ruta al archivo db.js es correcta
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
+
 
 async function updatePasswords() {
   try {

@@ -1,6 +1,6 @@
 // authController.js
 
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { Resend } from 'resend';
 import { getUserByEmail, updateUserPassword, createPasswordResetCode, getPasswordResetCode } from '../models/users.js';
