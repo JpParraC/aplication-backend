@@ -58,7 +58,7 @@ export const getUserByStaffId = async (staffId) => {
         s.created_at AS staff_created_at,
         s.updated_at AS staff_updated_at
       FROM users u
-      INNER JOIN staff s ON u.staff_id = s.id
+      INNER JOIN staff s ON u.staff_id = s.id_staff
       WHERE u.staff_id = ${staffId}
       LIMIT 1;
     `;

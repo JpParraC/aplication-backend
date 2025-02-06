@@ -12,6 +12,9 @@ import paymentRoutes from './src/routes/payment.router.js';
 import { authenticateAndAuthorize } from './src/middleware/authmiddleware.js'; 
 import rolesRouter from './src/routes/roles.routes.js';  
 import adminRoutes from './src/routes/adminroutes.js';
+import dashboardRoutes from './src/routes/dashboardroutes.js';
+import auditRoutes from './src/routes/auditroutes.js';
+
 import morgan from 'morgan';
 import cors from 'cors';
 import dotenv from 'dotenv'; // Importar dotenv para cargar variables de entorno
@@ -63,6 +66,13 @@ console.log("Montando las rutas de facturas en '/api/invoices'");
 
 app.use('/api/payments', paymentRoutes);
 console.log("Montando las rutas de pagos en '/api/payments'");
+
+app.use('/api/dashboard', dashboardRoutes);
+console.log("Montando las rutas de dashboard");
+
+app.use('/api/audit', auditRoutes);
+console.log("Montando las rutas de dashboard");
+
 
 
 

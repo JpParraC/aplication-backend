@@ -1,9 +1,8 @@
 import { pool } from '../routes/db.js';
 
-// Obtener todas las reservas
 export const getReservations = async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM reservation');
+    const result = await pool.query('SELECT * FROM get_reservations()');
     res.json(result.rows);
   } catch (err) {
     console.error('Error in query:', err.stack);
@@ -11,11 +10,11 @@ export const getReservations = async (req, res) => {
   }
 };
 
-// Obtener una reserva por ID
+
 export const getReservationById = async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await pool.query('SELECT * FROM reservation WHERE id = $1', [id]);
+    const result = await pool.query('SELECT * FROM get_reservation_by_id($1)', [id]);
     if (result.rows.length > 0) {
       res.json(result.rows[0]);
     } else {
@@ -27,66 +26,8 @@ export const getReservationById = async (req, res) => {
   }
 };
 
-// Crear una nueva reserva
+
 export const createReservation = async (req, res) => {
-  console.log("Request Body:", req.body); // Verifica qué datos está recibiendo el backend
-
-  const {
-    date_reserve,
-    date_checkin,
-    date_checkout,
-    number_nights,
-    guests_id_guest, // Ahora hacemos referencia a 'guests'
-    rooms, // Array de enteros
-  } = req.body;
-
-  // Validar campos requeridos
-  if (!date_reserve || !date_checkin || !date_checkout || !number_nights || !guests_id_guest || !rooms) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
-  // Validar que 'rooms' sea un array no vacío y de enteros
-  if (!Array.isArray(rooms) || rooms.length === 0 || !rooms.every(room => Number.isInteger(room))) {
-    return res.status(400).json({ message: "Rooms must be a non-empty array of integers" });
-  }
-
-  try {
-    // Verificar si el huésped existe
-    const guestResult = await pool.query(
-      `SELECT * FROM guests WHERE id_guest = $1`,
-      [guests_id_guest]
-    );
-
-    if (guestResult.rows.length === 0) {
-      return res.status(404).json({ message: "Guest not found. Please register the guest first." });
-    }
-
-    // Insertar la nueva reserva
-    const result = await pool.query(
-      `INSERT INTO reservation (
-        date_reserve, 
-        date_checkin, 
-        date_checkout, 
-        number_nights, 
-        guests_id_guest, 
-        rooms, 
-        created_at, 
-        updated_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW()) RETURNING id`,
-      [date_reserve, date_checkin, date_checkout, number_nights, guests_id_guest, rooms]
-    );
-
-    // Respuesta exitosa
-    res.status(201).json({ reservationId: result.rows[0].id });
-  } catch (err) {
-    console.error("Error in query:", err);
-    res.status(500).json({ error: "An unexpected error occurred", details: err.message });
-  }
-};
-
-// Actualizar una reserva existente
-export const updateReservation = async (req, res) => {
-  const { id } = req.params;
   const {
     date_reserve,
     date_checkin,
@@ -96,18 +37,8 @@ export const updateReservation = async (req, res) => {
     rooms,
   } = req.body;
 
-  console.log("Request Params:", req.params); // Verifica los parámetros enviados
-  console.log("Request Body:", req.body); // Verifica los datos enviados en el cuerpo
-
   // Validar campos requeridos
-  if (
-    !date_reserve ||
-    !date_checkin ||
-    !date_checkout ||
-    !number_nights ||
-    !guests_id_guest ||
-    !rooms
-  ) {
+  if (!date_reserve || !date_checkin || !date_checkout || !number_nights || !guests_id_guest || !rooms) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -117,54 +48,46 @@ export const updateReservation = async (req, res) => {
   }
 
   try {
+    // Llamar a la función de la base de datos para crear la reserva
     const result = await pool.query(
-      `UPDATE reservation SET 
-        date_reserve = $1,
-        date_checkin = $2,
-        date_checkout = $3,
-        number_nights = $4,
-        guests_id_guest = $5,
-        rooms = $6, -- Pasamos el array directamente
-        updated_at = NOW()
-      WHERE id = $7 RETURNING *`,
-      [
-        date_reserve,
-        date_checkin,
-        date_checkout,
-        number_nights,
-        guests_id_guest,
-        rooms, // Pasamos el array directamente
-        id,
-      ]
+      `SELECT * FROM create_reservation($1, $2, $3, $4, $5, $6)`,
+      [date_reserve, date_checkin, date_checkout, number_nights, guests_id_guest, rooms]
     );
 
-    if (result.rows.length > 0) {
-      console.log("Updated Reservation:", result.rows[0]); // Log para verificar los datos actualizados
-      res.json(result.rows[0]);
-    } else {
-      res.status(404).json({ message: "Reservation not found" });
-    }
+    res.status(201).json({ reservationId: result.rows[0].id });
   } catch (err) {
-    console.error("Error in query:", err.stack);
-    res.status(500).send("Database error");
+    console.error("Error in query:", err);
+    res.status(500).json({ error: "An unexpected error occurred", details: err.message });
+  }
+};
+
+export const updateReservation = async (req, res) => {
+  const { id } = req.params;
+  const { date_reserve, date_checkin, date_checkout, number_nights, guests_id_guest, rooms } = req.body;
+
+  try {
+      await pool.query(`CALL update_reservation($1, $2, $3, $4, $5, $6, $7)`, 
+          [id, date_reserve, date_checkin, date_checkout, number_nights, guests_id_guest, rooms]);
+
+      res.json({ message: "Reservation successfully updated" });
+  } catch (err) {
+      console.error("Error in query:", err);
+      res.status(500).json({ error: "Database error", details: err.message });
   }
 };
 
 
 
-// Eliminar una reserva
 export const deleteReservation = async (req, res) => {
   const { id } = req.params;
   try {
-    const { rowCount } = await pool.query('DELETE FROM reservation WHERE id = $1', [id]);
+    // Llamar a la función de la base de datos para eliminar la reserva
+    await pool.query('CALL delete_reservation($1)', [id]);
 
-    if (rowCount === 0) {
-      return res.status(404).json({ message: "Reservation not found" });
-    } else {
-      res.json({ message: "Reservation successfully deleted" });
-    }
+    res.json({ message: "Reservation successfully deleted" });
   } catch (err) {
     console.error('Error in query:', err.stack);
     res.status(500).send('Database error');
   }
 };
+
