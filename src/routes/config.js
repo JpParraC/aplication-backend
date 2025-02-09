@@ -4,3 +4,7 @@ export const DB_HOST = process.env.DB_HOST || "localhost";
 export const DB_PASSWORD = process.env.DB_PASSWORD || "1234567890";
 export const DB_DATABASE = process.env.DB_DATABASE || "bdadvancedhotel";
 export const DB_PORT = process.env.DB_PORT || 5432;
+export const DB_ADMIN_USER = process.env.DB_ADMIN_USER || "admin_user";
+export const DB_ADMIN_PASSWORD = process.env.DB_ADMIN_PASSWORD || "admin_password";
+export const DB_REC_USER = process.env.DB_REC_USER || "receptionist_user";
+export const DB_REC_PASSWORD = process.env.DB_REC_PASSWORD || "receptionist_password";

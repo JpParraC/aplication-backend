@@ -1,18 +1,15 @@
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { pool } from '../routes/db.js'; 
 
 // Controlador para obtener los registros de la tabla de auditoría
 const getAuditData = async (req, res) => {
   try {
-    // Obtener todos los registros de la tabla 'audit'
-    const auditRecords = await prisma.audit.findMany({
-      orderBy: {
-        timestamp: 'desc', // Ordenamos por la fecha (de más reciente a más antiguo)
-      },
-    });
+    // Realizar la consulta para obtener los registros de la tabla 'audit' ordenados por 'timestamp'
+    const result = await pool.query(
+      'SELECT * FROM audit ORDER BY timestamp DESC'
+    );
 
     // Enviar los registros de auditoría como respuesta
-    res.json(auditRecords);
+    res.json(result.rows); // result.rows contiene los registros de la tabla audit
   } catch (error) {
     console.error('Error fetching audit data:', error);
     res.status(500).json({ message: 'Error fetching audit data' });

@@ -43,24 +43,25 @@ export const getStaffById = async (req, res) => {
 
 // Crear un nuevo empleado
 export const createStaff = async (req, res) => {
-  const { id_staff, name_staff, lastname_staff, email_staff, phone, rol_id } = req.body;
+  const { id_staff, name_staff, lastname_staff, email_staff, phone, rol_id, gen } = req.body;
 
-  if (!id_staff || !name_staff || !lastname_staff || !email_staff || !phone || !rol_id) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
+ 
 
   try {
+    // Insertar los datos en la base de datos incluyendo el campo gen
     const result = await prisma.$queryRaw`
-      INSERT INTO staff (id_staff, name_staff, lastname_staff, email_staff, phone, rol_id)
-      VALUES (${id_staff}, ${name_staff}, ${lastname_staff}, ${email_staff}, ${phone}, ${rol_id})
+      INSERT INTO staff (id_staff, name_staff, lastname_staff, email_staff, phone, rol_id, gen)
+      VALUES (${id_staff}, ${name_staff}, ${lastname_staff}, ${email_staff}, ${phone}, ${rol_id}, ${gen})
       RETURNING *
     `;
+    // Responder con el registro creado
     res.status(201).json(result[0]);
   } catch (err) {
     console.error('Error in query:', err.stack);
     res.status(500).send('Database error');
   }
 };
+
 
 // Actualizar un empleado
 export const updateStaff = async (req, res) => {

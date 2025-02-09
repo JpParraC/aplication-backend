@@ -14,6 +14,10 @@ import rolesRouter from './src/routes/roles.routes.js';
 import adminRoutes from './src/routes/adminroutes.js';
 import dashboardRoutes from './src/routes/dashboardroutes.js';
 import auditRoutes from './src/routes/auditroutes.js';
+import equipmentroutes from './src/routes/equipmentroutes.js';
+import specificroutes from './src/routes/specificroutes.js';
+
+
 
 import morgan from 'morgan';
 import cors from 'cors';
@@ -71,7 +75,13 @@ app.use('/api/dashboard', dashboardRoutes);
 console.log("Montando las rutas de dashboard");
 
 app.use('/api/audit', auditRoutes);
-console.log("Montando las rutas de dashboard");
+console.log("Montando las rutas de audit");
+
+app.use('/api/equipment', equipmentroutes);
+console.log("Montando las rutas de equipamiento en '/api/equipment'");
+
+app.use('/api/specific', specificroutes);
+console.log("Montando las rutas de specific en '/api/specific'");
 
 
 
