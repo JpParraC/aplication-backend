@@ -27,32 +27,31 @@ export const getRoomSpecificEquipmentById = async (req, res) => {
   }
 };
 
-// Crear un nuevo equipo específico de habitación
 export const createRoomSpecificEquipment = async (req, res) => {
-  const { room_id, equipment_id, type_room } = req.body;
+  const { room_id } = req.params; // Obtener el room_id de la URL
+  const { equipment_ids, room_type_id } = req.body; // Ahora recibe room_type_id desde el frontend
 
-  if (!room_id || !equipment_id ) {
-    return res.status(400).json({ message: "All fields are required" });
+  if (!room_id || !equipment_ids || equipment_ids.length === 0 || !room_type_id) {
+    return res.status(400).json({ message: "Room ID, room type ID, and equipment IDs are required" });
   }
 
   try {
-   const roomResult = await pool.query(
-     `SELECT rooms_type_id FROM rooms WHERE id = $1`, 
-      [room_id]
-    );
-    const type_room = roomResult.rows[0]?.type_room; // Suponiendo que `rooms` tiene el campo `type_room`
+    // Insertar los equipos en la base de datos
+    const insertPromises = equipment_ids.map(async (equipment_id) => {
+      return pool.query(
+        `INSERT INTO room_specific_equipment (room_id, equipment_id, type_room) 
+         VALUES ($1, $2, $3) RETURNING *`,
+        [room_id, equipment_id, room_type_id] // Ahora usa el room_type_id recibido
+      );
+    });
 
-    // Luego, insertar en la tabla `room_specific_equipment`
-    const result = await pool.query(
-      `INSERT INTO room_specific_equipment (room_id, equipment_id, type_room) 
-       VALUES ($1, $2, $3) 
-       RETURNING *`,
-      [room_id, equipment_id, type_room]  // Asegúrate de que `type_room` está disponible aquí
-    );
-    res.status(201).json(result.rows[0]);
+    // Ejecutar todas las inserciones en paralelo
+    await Promise.all(insertPromises);
+
+    res.status(201).json({ message: "Equipment added successfully" });
   } catch (err) {
-    console.error('Error in query:', err.stack);
-    res.status(500).send('Database error');
+    console.error("Error in query:", err.stack);
+    res.status(500).send("Database error");
   }
 };
 
@@ -92,6 +91,54 @@ export const deleteRoomSpecificEquipment = async (req, res) => {
       return res.status(404).json({ message: "Room specific equipment not found" });
     } else {
       res.json({ message: "Room specific equipment successfully deleted" });
+    }
+  } catch (err) {
+    console.error('Error in query:', err.stack);
+    res.status(500).send('Database error');
+  }
+};
+export const getEquipmentsByRoomId = async (req, res) => {
+  const { room_id } = req.params;
+
+  if (!room_id) {
+    return res.status(400).json({ message: "room_id is required" });
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT rse.equipment_id, eq.equipment_name
+       FROM room_specific_equipment rse
+       JOIN room_equipment eq ON rse.equipment_id = eq.id
+       WHERE rse.room_id = $1`,
+      [room_id]
+    );
+
+    if (result.rows.length > 0) {
+      res.json(result.rows);
+    } else {
+      res.status(404).json({ message: "No equipment found for this room" });
+    }
+  } catch (err) {
+    console.error('Error in query:', err.stack);
+    res.status(500).send('Database error');
+  }
+};
+
+// Obtener todos los equipos agrupados por room_id
+export const getAllEquipmentGroupedByRoom = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT rse.room_id,
+              STRING_AGG(re.equipment_name, ', ' ORDER BY rse.equipment_id) AS equipment_names
+       FROM room_specific_equipment rse
+       JOIN room_equipment re ON re.id = rse.equipment_id
+       GROUP BY rse.room_id`
+    );
+
+    if (result.rows.length > 0) {
+      res.json(result.rows); // Devolvemos todos los resultados
+    } else {
+      res.status(404).json({ message: "No equipment found for any room" });
     }
   } catch (err) {
     console.error('Error in query:', err.stack);
